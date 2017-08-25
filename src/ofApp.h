@@ -33,8 +33,11 @@ class ofApp : public ofBaseApp{
     unsigned char dmxData[NUM_OF_CHANNELS];
     
     ofxPanel gui;
+    ofxPanel gui2;
     
     vector <ofxIntSlider*> slider;
+    vector <ofxToggle*> toggles;
+    vector <bool> fadeUp;
     
     
     ofxToggle sendData;

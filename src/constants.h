@@ -10,6 +10,6 @@
 #define constants_h
 
 #define ADAPTER_ADRESS "10.7.171.191"
-const int NUM_OF_CHANNELS = 10;
+const int NUM_OF_CHANNELS = 5;
 
 #endif /* constants_h */

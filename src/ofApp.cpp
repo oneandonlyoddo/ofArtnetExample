@@ -4,18 +4,27 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     artnet.setup("10.7.171.50");
-    gui.setup();
+    gui.setup("slider");
+    gui2.setup("fade");
     
     for (int i = 0; i < NUM_OF_CHANNELS; i++ ){
         channelNames.push_back("channel "+std::to_string(i));
+        fadeUp.push_back(true);
     }
     
-    channelNames[0] = "Pan";
-    channelNames[2] = "Tilt";
-    channelNames[9] = "Dimmer";
-    channelNames[8] = "Function";
-    channelNames[7] = "Speed";
-    channelNames[6] = "Shutter";
+    channelNames[0] = "Lamp on off";
+    channelNames[1] = "Shutter Speed";
+    channelNames[2] = "Shutter Controll";
+    channelNames[3] = "Focus Speed";
+    channelNames[4] = "Focus";
+    
+    //196 shutter max?!
+    //200 focus max
+    
+    /*
+     shutter speed 5 full open 11.7s
+     shutter speed 255 full open 1.3s
+     */
     
     
     for (int i = 0; i < NUM_OF_CHANNELS; i++ ){
@@ -23,13 +32,19 @@ void ofApp::setup(){
         gui.add(sl->setup(channelNames[i], 0, 0, 255));
         slider.push_back(sl);
         dmxData[i] = 0;
+        ofxToggle* toggle = new ofxToggle();
+        gui2.add(toggle->setup("fade"+ std::to_string(i),false ));
+        toggles.push_back(toggle);
     }
+    
+    gui2.setPosition(gui.getPosition().x *2 + gui.getWidth(), gui.getPosition().y);
     
     
     
     gui.add(sendData.setup("Send Data", false));
     
-    ofSetWindowShape(gui.getPosition().x *2 + gui.getWidth(), gui.getPosition().y*2 + gui.getHeight());
+    
+    ofSetWindowShape(gui.getPosition().x *4 + gui.getWidth()*2, gui.getPosition().y*2 + gui.getHeight());
    
 }
 
@@ -38,6 +53,23 @@ void ofApp::update(){
     
     for (int i = 0; i < NUM_OF_CHANNELS; i++ ){
         dmxData[i] = *slider[i];
+        if (*toggles[i]){
+            if(fadeUp[i]){
+                if(*slider[i]<255){
+                    *slider[i] = *slider[i]+1;
+                }else{
+                    fadeUp[i] = false;
+                }
+                
+            } else{
+                if(*slider[i]>0){
+                    *slider[i] = *slider[i]-1;
+                }else{
+                    fadeUp[i] = true;
+                }
+            }
+            
+        }
     }
     
     if (sendData){
@@ -51,6 +83,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     gui.draw();
+    gui2.draw();
 }
 
 //--------------------------------------------------------------
